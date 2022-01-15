@@ -1,0 +1,37 @@
+version: '2.2'
+
+services:
+  setup:
+    container_name: elasticsearch_certificates
+    image: elasticsearch:${TAG}
+    command: >
+      bash -c '
+        if [[ ! -f /certs/elasticsearch01.p12 || \
+              ! -f /certs/kibana.zip ]]; then
+          echo "Removing certificates" &&
+          rm -rf /certs/* &&
+          
+          echo "Generating CA" &&
+          bin/elasticsearch-certutil ca --silent --pass ${CA_PASSWORD} --pem --out /certs/ca.zip &&
+          unzip /certs/ca.zip -d /certs &&
+          
+          echo "Generating certificate for Elasticsearch01" &&
+          bin/elasticsearch-certutil cert --silent --ca-cert /certs/ca/ca.crt --ca-key /certs/ca/ca.key --ca-pass ${CA_PASSWORD} --pass ${ELASTICSEARCH01_CERT_PASSWORD} --dns elasticsearch01 --out /certs/elasticsearch01.p12 &&
+                    
+          echo "Generating certificate for Kibana" &&
+          bin/elasticsearch-certutil cert --silent --ca-cert /certs/ca/ca.crt --ca-key /certs/ca/ca.key --ca-pass ${CA_PASSWORD} --pass ${KIBANA_CERT_PASSWORD} --pem --dns kibana --out /certs/kibana.zip &&
+          unzip /certs/kibana.zip -d /certs &&
+          mv /certs/instance/instance.crt /certs/kibana.crt &&
+          mv /certs/instance/instance.key /certs/kibana.key &&
+          rm -rf /certs/instance &&
+          
+          chown -R 1000:0 /certs
+        fi;
+      '
+    user: "0"
+    working_dir: /usr/share/elasticsearch
+    volumes: 
+      -  ${SETUP_DIR}:/certs
+
+    env_file:
+      - conf_env

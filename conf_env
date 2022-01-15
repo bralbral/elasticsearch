@@ -1,0 +1,53 @@
+TAG=7.13.1
+ES_DATA=./es_data
+CERTS=./certs
+KIBANA_DATA=./kibana_data
+SETUP_DIR=./setup
+
+# Configure certs
+CA_PASSWORD=
+ELASTICSEARCH01_CERT_PASSWORD=
+KIBANA_CERT_PASSWORD=
+# ====================
+# Configure services
+ES_CLUSTER_NAME=
+# password for user elastic (default)
+ELASTIC_PASSWORD=
+# setup kibana user
+ELASTICSEARCH_USERNAME=
+# setup saved objects enc key
+XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=
+
+# es_settings
+node.name=es01
+cluster.name=${ES_CLUSTER_NAME}
+cluster.initial_master_nodes=es01
+discovery.seed_hosts=es01
+xpack.security.enabled=true
+xpack.security.authc.token.enabled=true
+xpack.security.audit.enabled=true
+xpack.security.authc.realms.native.native1.order=0
+xpack.security.transport.ssl.enabled=true
+xpack.security.transport.ssl.keystore.password=${ELASTICSEARCH01_CERT_PASSWORD}
+xpack.security.transport.ssl.truststore.password=${ELASTICSEARCH01_CERT_PASSWORD}
+xpack.security.transport.ssl.keystore.path=certs/es/elasticsearch01.p12
+xpack.security.transport.ssl.verification_mode=certificate
+xpack.security.http.ssl.enabled=true
+xpack.security.http.ssl.keystore.password=${ELASTICSEARCH01_CERT_PASSWORD}
+xpack.security.http.ssl.truststore.password=${ELASTICSEARCH01_CERT_PASSWORD}
+xpack.security.http.ssl.keystore.path=certs/es/elasticsearch01.p12
+xpack.security.http.ssl.verification_mode=certificate
+xpack.license.self_generated.type=basic
+
+
+# kibana_settings
+SERVERNAME=kibana
+ELASTICSEARCH_HOSTS=https://es:9200
+ELASTICSEARCH_PASSWORD=${ELASTIC_PASSWORD}
+ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca/ca.crt
+ELASTICSEARCH_SSL_VERIFICATIONMODE=certificate
+SERVER_SSL_ENABLED=true
+SERVER_SSL_KEY=config/certs/kibana/kibana.key
+SERVER_SSL_CERTIFICATE=config/certs/kibana/kibana.crt
+SERVER_SSL_PASSWORD=${KIBANA_CERT_PASSWORD}
+SERVER_SSL_KEYPASSPHRASE=${KIBANA_CERT_PASSWORD}
