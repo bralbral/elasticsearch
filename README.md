@@ -42,8 +42,20 @@ docker-compose --env-file conf_env -f docker-compose.yml up
 ```
 ### Testing:
 
- Just visit https://{your_ip}:5601/ and log in by typing your **elastic**  and **ELASTIC_PASSWORD** (see **Instalation**)
+ Just visit https://{your_ip}:5601/ 
  
+ log in by typing your **elastic**  and **ELASTIC_PASSWORD** (see **Instalation**)
+ 
+ 
+### Create Client Cert
+```
+openssl x509 -req -days 365000 -set_serial 01    -in client-req.pem    -out client-cert.pem    -CA ./ca/ca.crt    -CAkey ./ca/ca.key
+```
+## Validate Client Cert
+```
+openssl verify -CAfile ./ca/ca.crt    ca-cert.pem    client-cert.pem
+```
+
  
  
 
